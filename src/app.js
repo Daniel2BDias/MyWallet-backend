@@ -57,21 +57,19 @@ app.post("/cadastro", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  const { error } = loginSchema.validate(req.body, { abortEarly: false });
-  if (error) return res.status(422).send(error.details.map((detail) => detail.message));
-
   try {
-    const userByEmail = await db.collection("users").findOne({ email });
-    if (!userByEmail) return res.status(404).send("Email não cadastrado!");
-
-    const isPwValid = bcrypt.compareSync(password, userByEmail.password);
-    if (!isPwValid) return res.status(401).send("Senha Incorreta!");
-
-    res.sendStatus(201);
+    const existingUser = await db.collection("users").findOne({ email });
+    if(!existingUser) return res.sendStatus(404);
+    const pWordValid = bcrypt.compareSync(password, existingUser.password);
+    if (!pWordValid) return res.sendStatus(401);
+    
+    res.sendStatus(200)
   } catch (error) {
     res.status(500).send(error.message);
   }
 });
+
+app.post("/");
 
 app.listen(process.env.PORT, () => {
   console.log(`Servidor Online! PORT: ${process.env.PORT}`);
