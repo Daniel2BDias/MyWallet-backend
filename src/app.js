@@ -34,6 +34,11 @@ const loginSchema = joi.object().keys({
   password: joi.string().min(3).required(),
 });
 
+const transactionSchema = joi.object().keys({
+      value: joi.number().required(),
+      description: joi.string().max(24).required()
+});
+
 app.post("/cadastro", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -76,7 +81,7 @@ app.post("/login", async (req, res) => {
     if (inSession)
       return res.status(409).send("Already in Session! Please, logout");
 
-    await db.collection("sessions").insertOne({ token, email });
+    await db.collection("sessions").insertOne({ id: existingUser._id, token, email });
 
     res.status(201).send({ token, email, name: existingUser.name });
   } catch (error) {
@@ -84,9 +89,23 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.delete("/logout/", async (req, res) => {
+    const { authorization } = req.headers;
+
+    const token = authorization?.replace("Bearer ", "");
+
+    try {
+      await db.collection("sessions").deleteOne({ token });
+
+      res.status(200).send("Logged Out Successfully!");
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+});
+
 app.post("/nova-transacao/:tipo", async (req, res) => {
   const { authorization } = req.headers;
-  const { tipo} = req.params;
+  const { tipo } = req.params;
   const { value, description } = req.body;
 
   if (tipo !== "add" && tipo !== "subtract") return res.sendStatus(404);
@@ -105,7 +124,7 @@ app.post("/nova-transacao/:tipo", async (req, res) => {
       .insertOne({
         id: user._id,
         email: user.email,
-        transaction: { value, description, type: tipo, time: `${dayjs().format("DD/MM")}` },
+        transaction: { value: Number(value).toFixed, description, type: tipo, date: `${dayjs().format("DD/MM")}` },
       });
 
     res.sendStatus(201);
@@ -115,10 +134,32 @@ app.post("/nova-transacao/:tipo", async (req, res) => {
 });
 
 app.get("/transactions", async (req, res) => {
+  const { authorization } = req.headers;
+
+  const token = authorization?.replace("Bearer ", "");
+
+  if(!token) return res.sendStatus(401);
+
+  try {
+    const user = await db.collection("sessions").findOne({ token });
+    if(!user) return res.sendStatus(404);
+
+    const transaction = await db.collection("transaction").find({id: user._id, email: user.email}).toArray();
+
+    res.status(200).send(transaction.map(t => t.transaction));
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+app.delete("/delete-entry", async (req, res) => {
+    const { authorization } = req.headers;
+    const token = authorization?.replace("Bearer ", "");
+
     try {
 
     } catch (error) {
-      
+      res.status(500).send(error.message);
     }
 });
 
