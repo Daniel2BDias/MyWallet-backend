@@ -59,17 +59,24 @@ app.post("/login", async (req, res) => {
 
   try {
     const existingUser = await db.collection("users").findOne({ email });
-    if(!existingUser) return res.sendStatus(404);
+    if (!existingUser) return res.sendStatus(404);
     const pWordValid = bcrypt.compareSync(password, existingUser.password);
     if (!pWordValid) return res.sendStatus(401);
+
+    const token = uuid();
     
-    res.sendStatus(200)
+    const inSession = await db.collection("sessions").findOne({ email });
+    if(inSession) return res.status(409).send("Already in Session! Please, logout");
+
+    await db.collection("sessions").insertOne({ token, email });
+
+    res.status(201).send({token, email, name: existingUser.name});
   } catch (error) {
     res.status(500).send(error.message);
   }
 });
 
-app.post("/");
+app.post("/", () => {});
 
 app.listen(process.env.PORT, () => {
   console.log(`Servidor Online! PORT: ${process.env.PORT}`);
