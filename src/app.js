@@ -7,7 +7,6 @@ import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 import dayjs from "dayjs";
 
-
 const app = express();
 
 app.use(cors());
@@ -35,8 +34,8 @@ const loginSchema = joi.object().keys({
 });
 
 const transactionSchema = joi.object().keys({
-      value: joi.number().required(),
-      description: joi.string().max(24).required()
+  value: joi.number().required(),
+  description: joi.string().max(10).required(),
 });
 
 app.post("/cadastro", async (req, res) => {
@@ -81,7 +80,7 @@ app.post("/login", async (req, res) => {
     if (inSession)
       return res.status(409).send("Already in Session! Please, logout");
 
-    await db.collection("sessions").insertOne({ id: existingUser._id, token, email });
+    await db.collection("sessions").insertOne({ token, email });
 
     res.status(201).send({ token, email, name: existingUser.name });
   } catch (error) {
@@ -90,23 +89,26 @@ app.post("/login", async (req, res) => {
 });
 
 app.delete("/logout/", async (req, res) => {
-    const { authorization } = req.headers;
+  const { authorization } = req.headers;
 
-    const token = authorization?.replace("Bearer ", "");
+  const token = authorization?.replace("Bearer ", "");
 
-    try {
-      await db.collection("sessions").deleteOne({ token });
+  try {
+    await db.collection("sessions").deleteOne({ token });
 
-      res.status(200).send("Logged Out Successfully!");
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
+    res.status(200).send("Logged Out Successfully!");
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.post("/nova-transacao/:tipo", async (req, res) => {
   const { authorization } = req.headers;
   const { tipo } = req.params;
   const { value, description } = req.body;
+
+  const { error } = transactionSchema.validate(req.body, { abortEarly: false });
+  if (error) return res.sendStatus(422);
 
   if (tipo !== "add" && tipo !== "subtract") return res.sendStatus(404);
 
@@ -119,13 +121,15 @@ app.post("/nova-transacao/:tipo", async (req, res) => {
 
     if (!user) return res.send(401);
 
-    await db
-      .collection("transaction")
-      .insertOne({
-        id: user._id,
-        email: user.email,
-        transaction: { value: Number(value).toFixed, description, type: tipo, date: `${dayjs().format("DD/MM")}` },
-      });
+    await db.collection("transaction").insertOne({
+      email: user.email,
+      transaction: {
+        value: Number(value).toFixed(2),
+        description,
+        type: tipo,
+        date: `${dayjs().format("DD/MM")}`,
+      },
+    });
 
     res.sendStatus(201);
   } catch (error) {
@@ -138,29 +142,39 @@ app.get("/transactions", async (req, res) => {
 
   const token = authorization?.replace("Bearer ", "");
 
-  if(!token) return res.sendStatus(401);
+  if (!token) return res.sendStatus(401);
 
   try {
     const user = await db.collection("sessions").findOne({ token });
-    if(!user) return res.sendStatus(404);
+    if (!user) return res.sendStatus(404);
 
-    const transaction = await db.collection("transaction").find({id: user._id, email: user.email}).toArray();
+    const transaction = await db
+      .collection("transaction")
+      .find({ email: user.email })
+      .toArray();
 
-    res.status(200).send(transaction.map(t => t.transaction));
+    res.status(200).send(transaction.map((t) => t.transaction));
   } catch (error) {
     res.status(500).send(error.message);
   }
 });
 
-app.delete("/delete-entry", async (req, res) => {
-    const { authorization } = req.headers;
-    const token = authorization?.replace("Bearer ", "");
+app.post("/delete-entry", async (req, res) => {
+  const { authorization } = req.headers;
+  const { transaction } = req.body;
+  const token = authorization?.replace("Bearer ", "");
 
-    try {
-
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
+  try {
+    const session = await db.collection("sessions").findOne({ token });
+    if (!session) return res.sendStatus(401);
+    const deletion = await db
+      .collection("transaction")
+      .deleteOne({ transaction });
+    if (deletion.deleteCount === 0) return res.sendStatus(404);
+    res.sendStatus(200);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.listen(process.env.PORT, () => {
