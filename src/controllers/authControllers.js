@@ -44,7 +44,7 @@ export const signUpController = async (req,res) => {
   
       const inSession = await db.collection("sessions").findOne({ email });
       if (inSession)
-        return res.status(409).send("Already in Session! Please, logout");
+        return res.status(409).send("Already in Session! Please, Log Out");
   
       await db.collection("sessions").insertOne({ token, email });
   
