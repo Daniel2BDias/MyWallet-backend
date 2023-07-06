@@ -70,7 +70,7 @@ export const newTransactionController = async (req, res) => {
       const deletion = await db
         .collection("transaction")
         .deleteOne({ transaction });
-      if (deletion.deleteCount === 0) return res.sendStatus(404);
+      if (deletion.deletedCount === 0) return res.sendStatus(404);
       res.sendStatus(200);
     } catch (error) {
       res.status(500).send(error.message);
