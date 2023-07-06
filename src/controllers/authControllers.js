@@ -42,10 +42,6 @@ export const signUpController = async (req,res) => {
   
       const token = uuid();
   
-      const inSession = await db.collection("sessions").findOne({ email });
-      if (inSession)
-        return res.status(409).send("Already in Session! Please, Log Out");
-  
       await db.collection("sessions").insertOne({ token, email });
   
       res.status(200).send({ token, email, name: existingUser.name });
