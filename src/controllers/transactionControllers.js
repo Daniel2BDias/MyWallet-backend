@@ -1,5 +1,6 @@
 import { transactionSchema } from "../schemas/transactionsSchemas.js";
 import dayjs from "dayjs";
+import db from "../../database.js";
 
 export const newTransactionController = async (req, res) => {
     const { authorization } = req.headers;
