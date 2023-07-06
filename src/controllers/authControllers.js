@@ -1,5 +1,5 @@
 import db from "../../database.js";
-import { signUpSchema, loginSchema } from "./schemas/authSchemas.js";
+import { signUpSchema, loginSchema } from "../schemas/authSchemas.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 

@@ -1,4 +1,4 @@
-import { transactionSchema } from "./schemas/transactionsSchemas.js";
+import { transactionSchema } from "../schemas/transactionsSchemas.js";
 import dayjs from "dayjs";
 
 export const newTransactionController = async (req, res) => {
