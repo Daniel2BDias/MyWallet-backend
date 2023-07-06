@@ -6,6 +6,8 @@ import joi from "joi";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 import dayjs from "dayjs";
+import { signUpSchema, loginSchema } from "./schemas/authSchemas.js";
+import { transactionSchema } from "./schemas/transactionsSchemas.js"
 
 const app = express();
 
@@ -21,22 +23,6 @@ try {
 } catch (error) {
   console.log(error.message);
 }
-
-const signUpSchema = joi.object().keys({
-  name: joi.string().required(),
-  email: joi.string().email().required(),
-  password: joi.string().min(3).required(),
-});
-
-const loginSchema = joi.object().keys({
-  email: joi.string().email().required(),
-  password: joi.string().min(3).required(),
-});
-
-const transactionSchema = joi.object().keys({
-  value: joi.number().required(),
-  description: joi.string().max(10).required(),
-});
 
 app.post("/cadastro", async (req, res) => {
   const { name, email, password } = req.body;
@@ -82,7 +68,7 @@ app.post("/login", async (req, res) => {
 
     await db.collection("sessions").insertOne({ token, email });
 
-    res.status(201).send({ token, email, name: existingUser.name });
+    res.status(200).send({ token, email, name: existingUser.name });
   } catch (error) {
     res.status(500).send(error.message);
   }
