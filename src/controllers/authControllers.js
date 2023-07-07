@@ -1,15 +1,10 @@
 import db from "../../database.js";
-import { signUpSchema, loginSchema } from "../schemas/authSchemas.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 
 
 export const signUpController = async (req,res) => {
     const { name, email, password } = req.body;
-  
-    const { error } = signUpSchema.validate(req.body, { abortEarly: false });
-    if (error)
-      return res.status(422).send(error.details.map((detail) => detail.message));
   
     try {
       const alreadySignedEmail = await db.collection("users").findOne({ email });
@@ -28,11 +23,6 @@ export const signUpController = async (req,res) => {
 
   export const loginController = async (req, res) => {
     const { email, password } = req.body;
-  
-    const { error } = loginSchema.validate(req.body, { abortEarly: false });
-  
-    if (error)
-      return res.status(422).send(error.details.map((detail) => detail.message));
   
     try {
       const existingUser = await db.collection("users").findOne({ email });

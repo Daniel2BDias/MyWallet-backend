@@ -1,4 +1,3 @@
-import { transactionSchema } from "../schemas/transactionsSchemas.js";
 import dayjs from "dayjs";
 import db from "../../database.js";
 
@@ -6,9 +5,6 @@ export const newTransactionController = async (req, res) => {
     const { authorization } = req.headers;
     const { tipo } = req.params;
     const { value, description } = req.body;
-  
-    const { error } = transactionSchema.validate(req.body, { abortEarly: false });
-    if (error) return res.sendStatus(422);
   
     if (tipo !== "add" && tipo !== "subtract") return res.sendStatus(404);
   
