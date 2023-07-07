@@ -10,10 +10,12 @@ import validateToken from "../middlewares/validateToken.js";
 
 const transactionsRouter = Router();
 
-transactionsRouter.post("/nova-transacao/:tipo", validateToken, validateSchema(transactionSchema), newTransactionController);
+transactionsRouter.use(validateToken);
 
-transactionsRouter.get("/transactions", validateToken, listTransactionsController);
+transactionsRouter.post("/nova-transacao/:tipo", validateSchema(transactionSchema), newTransactionController);
 
-transactionsRouter.post("/delete-entry", validateToken, deleteEntryController);
+transactionsRouter.get("/transactions", listTransactionsController);
+
+transactionsRouter.post("/delete-entry", deleteEntryController);
 
 export default transactionsRouter;
