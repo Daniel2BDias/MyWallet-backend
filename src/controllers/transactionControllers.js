@@ -2,15 +2,11 @@ import dayjs from "dayjs";
 import db from "../../database.js";
 
 export const newTransactionController = async (req, res) => {
-    const { authorization } = req.headers;
     const { tipo } = req.params;
     const { value, description } = req.body;
+    const token = res.locals.token;
   
     if (tipo !== "add" && tipo !== "subtract") return res.sendStatus(404);
-  
-    const token = authorization?.replace("Bearer ", "");
-  
-    if (!token) return res.sendStatus(401);
   
     try {
       const user = await db.collection("sessions").findOne({ token });
@@ -34,11 +30,7 @@ export const newTransactionController = async (req, res) => {
   };
 
   export const listTransactionsController = async (req, res) => {
-    const { authorization } = req.headers;
-  
-    const token = authorization?.replace("Bearer ", "");
-  
-    if (!token) return res.sendStatus(401);
+    const token = res.locals.token;
   
     try {
       const user = await db.collection("sessions").findOne({ token });
@@ -56,9 +48,8 @@ export const newTransactionController = async (req, res) => {
   };
 
   export const deleteEntryController = async (req, res) => {
-    const { authorization } = req.headers;
     const { transaction } = req.body;
-    const token = authorization?.replace("Bearer ", "");
+    const token = res.locals.token;
   
     try {
       const session = await db.collection("sessions").findOne({ token });
