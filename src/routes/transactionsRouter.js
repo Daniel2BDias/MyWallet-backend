@@ -16,6 +16,6 @@ transactionsRouter.post("/nova-transacao/:tipo", validateSchema(transactionSchem
 
 transactionsRouter.get("/transactions", listTransactionsController);
 
-transactionsRouter.post("/delete-entry", deleteEntryController);
+transactionsRouter.delete("/delete-entry", deleteEntryController);
 
 export default transactionsRouter;
