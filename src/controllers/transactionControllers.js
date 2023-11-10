@@ -83,7 +83,7 @@ export const newTransactionController = async (req, res) => {
       await db.collection("transaction").updateOne(
         {_id: new ObjectId(id)},
         { $set: { transaction: {
-          value,
+          value: Number(value).toFixed(2),
           description,
           type,
           date: `${dayjs().format("DD/MM")}`
