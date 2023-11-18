@@ -8,7 +8,7 @@ export const newTransactionController = async (req, res) => {
     const { value, description } = req.body;
     const { token } = res.locals;
 
-    const stripDescription = stripHtml(description).result;
+    const stripDescription = stripHtml(description);
   
     if (type !== "add" && type !== "subtract") return res.sendStatus(404);
   
@@ -21,7 +21,7 @@ export const newTransactionController = async (req, res) => {
         email: user.email,
         transaction: {
           value: Number(value).toFixed(2),
-          description: stripDescription,
+          description: stripDescription.result,
           type,
           date: `${dayjs().format("DD/MM")}`,
         },
@@ -76,7 +76,7 @@ export const newTransactionController = async (req, res) => {
     const { value, description } = req.body;
     const { token } = res.locals;
 
-    const stripDescription = stripHtml(description).result;
+    const stripDescription = stripHtml(description);
 
     if (type !== "add" && type !== "subtract") return res.sendStatus(404);
 
@@ -89,7 +89,7 @@ export const newTransactionController = async (req, res) => {
         {_id: new ObjectId(id)},
         { $set: { transaction: {
           value: Number(value).toFixed(2),
-          description: stripDescription,
+          description: stripDescription.result,
           type,
           date: `${dayjs().format("DD/MM")}`
         }}}
