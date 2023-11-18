@@ -7,7 +7,7 @@ import { v4 as uuid } from "uuid";
 export const signUpController = async (req,res) => {
     const { email, password, name } = req.body;
 
-    const stripName = stripHtml(name);
+    const stripName = stripHtml(name).result;
   
     try {
       const alreadySignedEmail = await db.collection("users").findOne({ email });
