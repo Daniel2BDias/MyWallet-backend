@@ -8,7 +8,7 @@ export const newTransactionController = async (req, res) => {
     const { value, description } = req.body;
     const { token } = res.locals;
 
-    const stripDescription = stripHtml(description);
+    const stripDescription = stripHtml(description).result;
   
     if (type !== "add" && type !== "subtract") return res.sendStatus(404);
   
@@ -76,7 +76,7 @@ export const newTransactionController = async (req, res) => {
     const { value, description } = req.body;
     const { token } = res.locals;
 
-    const stripDescription = stripHtml(description);
+    const stripDescription = stripHtml(description).result;
 
     if (type !== "add" && type !== "subtract") return res.sendStatus(404);
 
