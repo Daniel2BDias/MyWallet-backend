@@ -1,10 +1,13 @@
 import db from "../../database.js";
 import bcrypt from "bcrypt";
+import { stripHtml } from "string-strip-html";
 import { v4 as uuid } from "uuid";
 
 
 export const signUpController = async (req,res) => {
-    const { email, password } = req.body;
+    const { email, password, name } = req.body;
+
+    const stripName = stripHtml(name);
   
     try {
       const alreadySignedEmail = await db.collection("users").findOne({ email });
@@ -13,7 +16,7 @@ export const signUpController = async (req,res) => {
   
       const hashedPw = bcrypt.hashSync(password, 10);
   
-      await db.collection("users").insertOne({ ...req.body, password: hashedPw });
+      await db.collection("users").insertOne({ ...req.body, name: stripName, password: hashedPw });
   
       res.sendStatus(201);
     } catch (error) {
