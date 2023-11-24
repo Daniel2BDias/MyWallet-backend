@@ -1,4 +1,4 @@
-import db from "../../database.js";
+import db from "../database/database.js";
 import bcrypt from "bcrypt";
 import { stripHtml } from "string-strip-html";
 import { v4 as uuid } from "uuid";
@@ -8,6 +8,8 @@ export const signUpController = async (req,res) => {
     const { email, password, name } = req.body;
 
     const stripName = stripHtml(name);
+
+    console.log(stripName.result);
   
     try {
       const alreadySignedEmail = await db.collection("users").findOne({ email });

@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import db from "../../database.js";
+import db from "../database/database.js";
 import { ObjectId } from "mongodb";
 import { stripHtml } from "string-strip-html";
 
