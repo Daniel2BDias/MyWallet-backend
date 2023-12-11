@@ -1,0 +1,10 @@
+node_modules
+coverage
+requirements
+.vscode
+*.json
+README.md
+.env*
+docker-compose*
+Dockerfile*
+nginx.conf

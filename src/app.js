@@ -1,7 +1,7 @@
-import express, { json } from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import router from "./routes/indexRouter.js";
+import express, { json } from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import router from './routes/indexRouter.js';
 
 const app = express();
 

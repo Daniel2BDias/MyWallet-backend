@@ -1,11 +1,11 @@
-export default function validateToken (req, res, next) {
-    const { authorization } = req.headers;
+export default function validateToken(req, res, next) {
+  const { authorization } = req.headers;
 
-    const token = authorization?.replace("Bearer ", "");
-  
-    if (!token) return res.sendStatus(401);
+  const token = authorization?.replace('Bearer ', '');
 
-    res.locals.token = token;
+  if (!token) return res.sendStatus(401);
 
-    next();
-};
+  res.locals.token = token;
+
+  next();
+}
