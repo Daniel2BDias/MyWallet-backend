@@ -11,6 +11,6 @@ async function dbConnection() {
   db = mongoClient.db();
 }
 
-dbConnection();
+await dbConnection();
 
 export default db;
