@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
-import { SignUpRepository, registerUser } from '../repositories/authRepository';
+import { SignUpRepository, registerUser } from '../repositories/authRepository.js';
 
 export const signUpService = async (req, password, stripHtml) => {
   const hashedPw = bcrypt.hashSync(password, 10);

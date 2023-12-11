@@ -1,6 +1,6 @@
 import { stripHtml } from 'string-strip-html';
-import { checkForEmail, checkForUser, logOut } from '../repositories/authRepository';
-import { checkPassword, signUpService, tokenGeneration } from '../services/authServices';
+import { checkForEmail, checkForUser, logOut } from '../repositories/authRepository.js';
+import { checkPassword, signUpService, tokenGeneration } from '../services/authServices.js';
 
 export const signUpController = async (req, res) => {
   const { email, password, name } = req.body;
